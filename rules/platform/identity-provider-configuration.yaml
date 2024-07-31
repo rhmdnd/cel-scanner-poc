@@ -5,5 +5,7 @@ checkType: Platform
 title: Verify at least one identity provider has been configured
 expression: cluster.spec.identityProviders.size() >= 1
 inputs:
-    # namespace : type : resource
-  - openshift-authentication:oauth:cluster
+  - type: kubeapi
+    apiGroup: config.openshift.io
+    version: v1
+    resource: oauth/cluster
