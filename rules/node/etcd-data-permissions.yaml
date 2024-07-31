@@ -1,0 +1,8 @@
+---
+# Implements CIS OpenShift Control 1.1.11
+kind: Rule
+checkType: Node
+title: Ensure the etcd data directory permissions are 0700
+expression: self.mode == 0700
+inputs:
+  - file:/host/var/lib/etcd
