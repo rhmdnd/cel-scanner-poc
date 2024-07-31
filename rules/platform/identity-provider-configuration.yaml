@@ -3,9 +3,11 @@
 kind: Rule
 checkType: Platform
 title: Verify at least one identity provider has been configured
-expression: cluster.spec.identityProviders.size() >= 1
+expression: var1.spec.identityProviders.size() >= 1
 inputs:
-  - type: kubeapi
+  - name: var1
+    type: KubeGroupVersionResource
     apiGroup: config.openshift.io
     version: v1
-    resource: oauth/cluster
+    resource: oauths
+    subResource: cluster
