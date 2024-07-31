@@ -1,0 +1,8 @@
+---
+# Implements CIS OpenShift Control 1.1.12
+kind: Rule
+checkType: Node
+title: Ensure the etcd data directory belongs to etcd user
+expression: self.group == etcd && self.owner == etcd
+inputs:
+  - file:/host/var/lib/etcd
