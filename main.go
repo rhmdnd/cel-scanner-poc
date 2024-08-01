@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -9,6 +10,8 @@ import (
 
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -57,9 +60,11 @@ func main() {
 		declsList = append(declsList, decls.NewVar(k, decls.Dyn))
 	}
 
+	envOpts := createCelEnvOptions()
+
 	// build a CEL environment with the rule expression
 	env, err := cel.NewEnv(
-		cel.Declarations(declsList...),
+		cel.Declarations(declsList...), envOpts,
 	)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to create CEL environment: %s", err))
@@ -97,6 +102,29 @@ func main() {
 		fmt.Println(r.ErrorMessage)
 	}
 	fmt.Printf("Evaluation result: %v\n", out)
+}
+
+func createCelEnvOptions() cel.EnvOption {
+	mapStrDyn := cel.MapType(cel.StringType, cel.DynType)
+	var envOpts cel.EnvOption = cel.Function("parseJSON",
+		cel.MemberOverload("parseJSON_string",
+			[]*cel.Type{cel.StringType}, mapStrDyn, cel.UnaryBinding(parseJSONString)))
+	return envOpts
+}
+
+func parseJSONString(val ref.Val) ref.Val {
+	str := val.(types.String)
+	decodedVal := map[string]interface{}{}
+	err := json.Unmarshal([]byte(str), &decodedVal)
+	if err != nil {
+		return types.NewErr("failed to decode '%v' in parseJSON: %w", str, err)
+	}
+	r, err := types.NewRegistry()
+	if err != nil {
+		return types.NewErr("failed to create a new registry in parseJSON: %w", err)
+	}
+
+	return types.NewDynamicMap(r, decodedVal)
 }
 
 func toCelValue(u interface{}) interface{} {
