@@ -11,3 +11,4 @@ inputs:
     version: v1
     resource: oauths
     subResource: cluster
+errorMessage: No identity providers are configured for the cluster.
