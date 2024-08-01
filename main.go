@@ -205,5 +205,4 @@ func collect(r *rule) map[string]interface{} {
 	}
 
 	return resultMap
-	// TBD on the return definition, since it can be anything with the Kubernetes ecosystem...
 }
