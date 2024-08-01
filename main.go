@@ -99,10 +99,18 @@ func main() {
 	fmt.Printf("Evaluation result: %v\n", out)
 }
 
-// toCelValue converts an unstructured.Unstructured object to a format compatible with CEL
-func toCelValue(u interface{}) map[string]interface{} {
+func toCelValue(u interface{}) interface{} {
 	if unstruct, ok := u.(*unstructured.Unstructured); ok {
 		return unstruct.Object
+	}
+	if unstructList, ok := u.(*unstructured.UnstructuredList); ok {
+		list := []interface{}{}
+		for _, item := range unstructList.Items {
+			list = append(list, item.Object)
+		}
+		return map[string]interface{}{
+			"items": list,
+		}
 	}
 	return nil
 }
