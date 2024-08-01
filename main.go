@@ -51,8 +51,7 @@ func main() {
 
 	declsList := []*expr.Decl{}
 
-	for k, v := range resultMap {
-		fmt.Printf("Key: %s\nValue: %v\n", k, v)
+	for k, _ := range resultMap {
 		// build a CEL environment with the rule expression
 		declsList = append(declsList, decls.NewVar(k, decls.Dyn))
 	}
