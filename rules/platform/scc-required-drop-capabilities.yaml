@@ -1,0 +1,13 @@
+---
+# Implements CIS OpenShift Control X.Y.Z
+kind: Rule
+checkType: Platform
+title: Verify there is at least one Security Context Constraint that drops all container capabilities
+expression: securityContextConstraints.exists(e, e.requiredDropCapabilities == ['ALL'])
+inputs:
+  - name: securityContextConstraints
+    type: KubeGroupVersionResource
+    apiGroup: security.openshift.io
+    version: v1
+    resource: securitycontextconstraints
+errorMessage: No Security Context Constraint exists that drops all capabilities
