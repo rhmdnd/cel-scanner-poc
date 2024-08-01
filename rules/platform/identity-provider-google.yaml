@@ -1,0 +1,13 @@
+---
+kind: Rule
+checkType: Platform
+title: Verify the cluster is configured to use Google as an identity provider
+expression: "identityProvider.spec.identityProviders.exists_one(e, e.type == 'Google')"
+inputs:
+  - name: identityProvider
+    type: KubeGroupVersionResource
+    apiGroup: config.openshift.io
+    version: v1
+    resource: oauths
+    subResource: cluster
+errorMessage: Google is not configured as an identity provider
