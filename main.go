@@ -21,11 +21,12 @@ import (
 var ruleFile string
 
 type rule struct {
-	Kind       string  `yaml:"kind"`
-	CheckType  string  `yaml:"checkType"`
-	Title      string  `yaml:"title"`
-	Expression string  `yaml:"expression"`
-	Inputs     []input `yaml:"inputs"`
+	Kind         string  `yaml:"kind"`
+	CheckType    string  `yaml:"checkType"`
+	Title        string  `yaml:"title"`
+	Expression   string  `yaml:"expression"`
+	Inputs       []input `yaml:"inputs"`
+	ErrorMessage string  `yaml:"errorMessage"`
 }
 
 type input struct {
@@ -93,6 +94,9 @@ func main() {
 	}
 
 	// report the findings
+	if out.Value() == false {
+		fmt.Println(r.ErrorMessage)
+	}
 	fmt.Printf("Evaluation result: %v\n", out)
 }
 
