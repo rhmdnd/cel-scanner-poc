@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-    "strings"
+	"strings"
 
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
@@ -86,7 +86,7 @@ func main() {
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "no such key:") {
 			fmt.Printf("Warning: %s in %s/%s\n", err, r.Inputs[0].Resource, r.Inputs[0].SubResource)
-			fmt.Printf("Evaluation result: false\n", )
+			fmt.Printf("Evaluation result: false\n")
 			return
 		}
 		panic(fmt.Sprintf("Failed to evaluate CEL expression: %s", err))
