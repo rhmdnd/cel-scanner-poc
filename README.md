@@ -473,6 +473,46 @@ inputs:
 errorMessage: Cluster isn't configured to use source registries to verify image provenance
 ```
 
+We can also use a custom CEL environment to parse JSON that we can access
+within the expression. We used that technique to check that the API server is
+not configured to use `auth-token-files`:
+
+```yaml
+kind: Rule
+checkType: Platform
+title: Verify that auth-token-files is not set in the openshfit-kube-apiserver configmap
+expression: '("auth-token-files" in cm.data["config.yaml"].parseJSON().apiServerArguments["enable-admission-plugins"]) == false'
+inputs:
+  - name: cm
+    namespace: openshift-kube-apiserver
+    type: KubeGroupVersionResource
+    apiGroup: ""
+    version: v1
+    resource: configmaps
+    subResource: config
+errorMessage: auth-token-files is configued in the openshift-kube-apiserver.
+```
+
+We used a similar approach to check specific aspects of a pod where we want to
+ensure the etc pod has at least one container that uses a certificate argument.
+
+```yaml
+kind: Rule
+checkType: Platform
+title: Ensure the etcd client certificate is set
+expression: cm.data["pod.yaml"].parseYAML().spec.containers.exists(c, c.command.exists(x, x.matches(r'--cert-file=/.*\.crt') ))
+# The expression above checks the following resource "oc get -nopenshift-etcd cm etcd-pod -oyaml"
+inputs:
+  - name: cm
+    namespace: openshift-etcd
+    type: KubeGroupVersionResource
+    apiGroup: ""
+    version: v1
+    resource: configmaps
+    subResource: etcd-pod
+errorMessage: There is no pod with executing a command '--cert-file='
+```
+
 Each of those examples used a single entity, in the check. Let's revisit the
 complicated example above where we want to make sure each namespace has a
 network policy:
