@@ -1,25 +1,25 @@
 kind: Rule
 checkType: Platform
-title: 'Ensure that application Namespaces have Network Policies defined.'
+title: Ensure that each application namespace has a network policy defined
 expression: >
-  size(applicationNamespaces.items) == 0 || 
+  size(nl.items) == 0 ||
   size(
-    applicationNamespaces.items
-    .filter(ns, !ns.metadata.name.matches(excludedNamespaces.value))
-    .filter(ns, networkPolicies.items.exists(np, np.metadata.namespace == ns.metadata.name))
-  ) == size(applicationNamespaces.items.filter(ns, !ns.metadata.name.matches(excludedNamespaces.value)))
+    nl.items
+    .filter(ns, !ns.metadata.name.matches(e.value))
+    .filter(ns, npl.items.exists(np, np.metadata.namespace == ns.metadata.name))
+  ) == size(nl.items.filter(ns, !ns.metadata.name.matches(e.value)))
 inputs:
-  - name: applicationNamespaces
+  - name: nl
     type: KubeGroupVersionResource
     apiGroup: ""
     version: v1
     resource: namespaces
-  - name: networkPolicies
+  - name: npl
     type: KubeGroupVersionResource
     apiGroup: networking.k8s.io
     version: v1
     resource: networkpolicies
-  - name: excludedNamespaces
+  - name: e
     type: KubeGroupVersionResource
     apiGroup: compliance.openshift.io
     version: v1alpha1
@@ -27,20 +27,4 @@ inputs:
     subResource: ocp4-var-network-policies-namespaces-exempt-regex
     namespace: openshift-compliance
 errorMessage: 'Application Namespaces do not have Network Policies defined.'
-
-
-
-# oc apply -f - <<EOF
-# apiVersion: compliance.openshift.io/v1alpha1
-# description: Namespaces regular expression explicitly allowed through network policy
-#   filters, e.g. setting value to "namespace1|namespace2" will exempt namespace "namespace1"
-#   and "namespace2" for network policies checks.
-# id: xccdf_org.ssgproject.content_value_var_network_policies_namespaces_exempt_regex
-# kind: Variable
-# metadata:
-#   name: ocp4-var-network-policies-namespaces-exempt-regex
-#   namespace: openshift-compliance
-# title: Namespaces exempt of Network Policies
-# type: string
-# value: ^(default|kube-.*|openshift.*)$
-# EOF
+# make sure to update the ocp4-var-network-policies-namespaces-exempt-regex with "^(default|kube-.*|openshift.*)$"

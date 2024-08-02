@@ -404,7 +404,12 @@ need to evaluate aspects of the OpenShift platform, like configuration or
 resources, require handcrafted XML that overloads aspects of the SCAP and OVAL
 standards to pass data around.
 
-### Now let's compare it with CEL based Rule:
+### How would we do this with CEL-base rules?
+
+:warning: The following examples assume a Compliance Operator `Rule` Custom
+Resource Definition. We did this because it would allow us to focus on how we
+would want to write the rules in an ideal world, with fast feedback loops and
+clear syntax. The `Rule` CRD doesn't support this today.
 
 #### CEL Workflow
 1. We established a syntax to express the API Path resources
@@ -415,29 +420,88 @@ standards to pass data around.
 We use the inputs to reference api resources and tailored variables 
 and then perform cel evaluation on it.
 
+Checking if the OpenShift cluster is configured to use an identity provider for authentication:
+
+```yaml
+---
+kind: Rule
+checkType: Platform
+title: Verify at least one identity provider has been configured
+expression: c.spec.identityProviders.size() >= 1
+inputs:
+  - name: c
+    type: KubeGroupVersionResource
+    apiGroup: config.openshift.io
+    version: v1
+    resource: oauths
+    subResource: cluster
+errorMessage: No identity providers are configured for the cluster.
+```
+
+Or, we can be more specific about the resources within the `cluster` we want to
+check by making sure we're using Google as an identity provider:
+
+```yaml
+---
+kind: Rule
+checkType: Platform
+title: Verify the cluster is configured to use Google as an identity provider
+expression: "c.spec.identityProviders.exists_one(i, i.type == 'Google')"
+inputs:
+  - name: c
+    type: KubeGroupVersionResource
+    apiGroup: config.openshift.io
+    version: v1
+    resource: oauths
+    subResource: cluster
+errorMessage: Google is not configured as an identity provider
+```
+
+We can use a similar technique for checking image provenance:
+
+```yaml
+---
+kind: Rule
+checkType: Platform
+title: Verify that the cluster is using image provenance
+expression: c.spec.registrySources.size() >= 1
+inputs:
+  - name: c
+    type: KubeGroupVersionResource
+    apiGroup: config.openshift.io
+    version: v1
+    resource: images
+    subResource: cluster
+errorMessage: Cluster isn't configured to use source registries to verify image provenance
+```
+
+Each of those examples used a single entity, in the check. Let's revisit the
+complicated example above where we want to make sure each namespace has a
+network policy:
+
 ```yaml
 kind: Rule
 checkType: Platform
-title: 'Ensure that application Namespaces have Network Policies defined.'
+title: Ensure that each application namespace has a network policy defined
 expression: >
-  size(applicationNamespaces.items) == 0 || 
+  size(nl.items) == 0 ||
   size(
-    applicationNamespaces.items
-    .filter(ns, !ns.metadata.name.matches(excludedNamespaces.value))
-    .filter(ns, networkPolicies.items.exists(np, np.metadata.namespace == ns.metadata.name))
-  ) == size(applicationNamespaces.items.filter(ns, !ns.metadata.name.matches(excludedNamespaces.value)))
+    nl.items
+    .filter(ns, !ns.metadata.name.matches(e.value))
+    .filter(ns, npl.items.exists(np, np.metadata.namespace == ns.metadata.name))
+  ) == size(nl.items.filter(ns, !ns.metadata.name.matches(e.value)))
 inputs:
-  - name: applicationNamespaces
+  - name: nl
     type: KubeGroupVersionResource
     apiGroup: ""
     version: v1
     resource: namespaces
-  - name: networkPolicies
+  - name: npl
     type: KubeGroupVersionResource
     apiGroup: networking.k8s.io
     version: v1
     resource: networkpolicies
-  - name: excludedNamespaces
+  - name: e
     type: KubeGroupVersionResource
     apiGroup: compliance.openshift.io
     version: v1alpha1
@@ -446,6 +510,3 @@ inputs:
     namespace: openshift-compliance
 errorMessage: 'Application Namespaces do not have Network Policies defined.'
 ```
-
-
-
