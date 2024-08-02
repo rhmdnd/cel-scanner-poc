@@ -60,16 +60,13 @@ func main() {
 		declsList = append(declsList, decls.NewVar(k, decls.Dyn))
 	}
 
-
 	mapStrDyn := cel.MapType(cel.StringType, cel.DynType)
-	var jsonenvOpts cel.EnvOption =
-		cel.Function("parseJSON",
-			cel.MemberOverload("parseJSON_string",
-				[]*cel.Type{cel.StringType}, mapStrDyn, cel.UnaryBinding(parseJSONString)))
-	var yamlenvOpts cel.EnvOption =
-		cel.Function("parseYAML",
-			cel.MemberOverload("parseYAML_string",
-				[]*cel.Type{cel.StringType}, mapStrDyn, cel.UnaryBinding(parseYAMLString)))
+	var jsonenvOpts cel.EnvOption = cel.Function("parseJSON",
+		cel.MemberOverload("parseJSON_string",
+			[]*cel.Type{cel.StringType}, mapStrDyn, cel.UnaryBinding(parseJSONString)))
+	var yamlenvOpts cel.EnvOption = cel.Function("parseYAML",
+		cel.MemberOverload("parseYAML_string",
+			[]*cel.Type{cel.StringType}, mapStrDyn, cel.UnaryBinding(parseYAMLString)))
 
 	// build a CEL environment with the rule expression
 	env, err := cel.NewEnv(
