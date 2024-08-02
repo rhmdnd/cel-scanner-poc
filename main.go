@@ -110,9 +110,8 @@ func main() {
 	if out.Value() == false {
 		fmt.Println(r.ErrorMessage)
 	}
-	fmt.Printf("Evaluation result: %v\n", out)
+	fmt.Printf("%s: %v\n", r.Title, out)
 }
-
 
 func parseJSONString(val ref.Val) ref.Val {
 	str := val.(types.String)
@@ -191,7 +190,7 @@ func collect(r *rule) map[string]interface{} {
 	if kubeconfig == "" {
 		panic("You must export KUBECONFIG for this tool to fetch Kubernetes resources")
 	}
-	fmt.Printf("Using %s to establish connection with cluster\n", kubeconfig)
+	// add logging here
 
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
@@ -214,7 +213,7 @@ func collect(r *rule) map[string]interface{} {
 			for _, input := range r.Inputs {
 				if input.Type == "KubeGroupVersionResource" {
 					// fetch the resource
-					fmt.Printf("Fetching %s/%s/%s/%s\n", input.ApiGroup, input.Version, input.Resource, input.SubResource)
+					// add logging here
 					gvr := schema.GroupVersionResource{
 						Group:    input.ApiGroup,
 						Version:  input.Version,
