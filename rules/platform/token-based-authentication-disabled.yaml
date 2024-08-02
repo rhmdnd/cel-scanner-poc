@@ -3,10 +3,10 @@
 # https://github.com/ComplianceAsCode/content/blob/master/applications/openshift/api-server/api_server_token_auth/rule.yml
 kind: Rule
 checkType: Platform
-title: Verify that auth-token-files is not set in the openshfit-kube-apiserver configmap.
-expression: '("auth-token-files" in apiServerCM.data["config.yaml"].parseJSON().apiServerArguments["enable-admission-plugins"]) == false'
+title: Verify that auth-token-files is not set in the openshfit-kube-apiserver configmap
+expression: '("auth-token-files" in cm.data["config.yaml"].parseJSON().apiServerArguments["enable-admission-plugins"]) == false'
 inputs:
-  - name: apiServerCM
+  - name: cm
     namespace: openshift-kube-apiserver
     type: KubeGroupVersionResource
     apiGroup: ""

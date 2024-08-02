@@ -3,10 +3,10 @@
 kind: Rule
 checkType: Platform
 title: Ensure the etcd client certificate is set
-expression: etcdPodYaml.data["pod.yaml"].parseYAML().spec.containers.exists(c, c.command.exists(x, x.matches(r'--cert-file=/.*\.crt') ))
+expression: cm.data["pod.yaml"].parseYAML().spec.containers.exists(c, c.command.exists(x, x.matches(r'--cert-file=/.*\.crt') ))
 # The expression above checks the following resource "oc get -nopenshift-etcd cm etcd-pod -oyaml"
 inputs:
-  - name: etcdPodYaml
+  - name: cm
     namespace: openshift-etcd
     type: KubeGroupVersionResource
     apiGroup: ""
