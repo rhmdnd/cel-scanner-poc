@@ -1,3 +1,4 @@
+# Reference Rule: https://github.com/ComplianceAsCode/content/blob/master/applications/openshift/networking/configure_network_policies_namespaces
 kind: Rule
 checkType: Platform
 title: Ensure that each application namespace has a network policy defined

@@ -1,5 +1,6 @@
 ---
 # Implements CIS OpenShift Control 3.1.1
+# Reference Rule: https://github.com/ComplianceAsCode/content/blob/master/applications/openshift/authentication/idp_is_configured/rule.yml
 kind: Rule
 checkType: Platform
 title: Verify at least one identity provider has been configured

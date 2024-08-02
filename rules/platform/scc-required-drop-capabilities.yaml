@@ -1,5 +1,6 @@
 ---
 # Implements CIS OpenShift Control X.Y.Z
+# Reference Rule: https://github.com/ComplianceAsCode/content/blob/master/applications/openshift/scc/scc_drop_container_capabilities/rule.yml
 kind: Rule
 checkType: Platform
 title: Verify there is at least one Security Context Constraint that drops all container capabilities

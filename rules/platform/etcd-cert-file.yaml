@@ -1,5 +1,6 @@
 ---
 # Implements CIS OpenShift Control 2.1
+# Reference Rule: https://github.com/ComplianceAsCode/content/blob/master/applications/openshift/etcd/etcd_cert_file/rule.yml
 kind: Rule
 checkType: Platform
 title: Ensure the etcd client certificate is set
