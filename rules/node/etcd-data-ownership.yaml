@@ -3,6 +3,9 @@
 kind: Rule
 checkType: Node
 title: Ensure the etcd data directory belongs to etcd user
-expression: self.group == etcd && self.owner == etcd
+expression: ectcd_file.group == etcd && ectcd_file.owner == etcd
 inputs:
-  - file:/host/var/lib/etcd
+  - name: ectcd_file
+    type: File
+    path: /host/var/lib/etcd
+errorMessage: The etcd data directory does not belong to the etcd user.
