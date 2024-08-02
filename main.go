@@ -60,11 +60,20 @@ func main() {
 		declsList = append(declsList, decls.NewVar(k, decls.Dyn))
 	}
 
-	envOpts := createCelEnvOptions()
+
+	mapStrDyn := cel.MapType(cel.StringType, cel.DynType)
+	var jsonenvOpts cel.EnvOption =
+		cel.Function("parseJSON",
+			cel.MemberOverload("parseJSON_string",
+				[]*cel.Type{cel.StringType}, mapStrDyn, cel.UnaryBinding(parseJSONString)))
+	var yamlenvOpts cel.EnvOption =
+		cel.Function("parseYAML",
+			cel.MemberOverload("parseYAML_string",
+				[]*cel.Type{cel.StringType}, mapStrDyn, cel.UnaryBinding(parseYAMLString)))
 
 	// build a CEL environment with the rule expression
 	env, err := cel.NewEnv(
-		cel.Declarations(declsList...), envOpts,
+		cel.Declarations(declsList...), jsonenvOpts, yamlenvOpts,
 	)
 	if err != nil {
 		panic(fmt.Sprintf("Failed to create CEL environment: %s", err))
@@ -104,13 +113,6 @@ func main() {
 	fmt.Printf("Evaluation result: %v\n", out)
 }
 
-func createCelEnvOptions() cel.EnvOption {
-	mapStrDyn := cel.MapType(cel.StringType, cel.DynType)
-	var envOpts cel.EnvOption = cel.Function("parseJSON",
-		cel.MemberOverload("parseJSON_string",
-			[]*cel.Type{cel.StringType}, mapStrDyn, cel.UnaryBinding(parseJSONString)))
-	return envOpts
-}
 
 func parseJSONString(val ref.Val) ref.Val {
 	str := val.(types.String)
@@ -124,6 +126,20 @@ func parseJSONString(val ref.Val) ref.Val {
 		return types.NewErr("failed to create a new registry in parseJSON: %w", err)
 	}
 
+	return types.NewDynamicMap(r, decodedVal)
+}
+
+func parseYAMLString(val ref.Val) ref.Val {
+	str := val.(types.String)
+	decodedVal := map[string]interface{}{}
+	err := yaml.Unmarshal([]byte(str), &decodedVal)
+	if err != nil {
+		return types.NewErr("failed to decode '%v' in parseYAML: %w", str, err)
+	}
+	r, err := types.NewRegistry()
+	if err != nil {
+		return types.NewErr("failed to create a new registry in parseJSON: %w", err)
+	}
 	return types.NewDynamicMap(r, decodedVal)
 }
 
