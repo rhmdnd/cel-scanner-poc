@@ -375,8 +375,7 @@ Which requires the following overloading to fetch `Namespace` and `NetworkPolicy
 		<html:code class="ocp-api-endpoint" id="7400bb301fff2f7fc7b1b0fb7448b8e3f15222a8d23f992204315b19eeefa72f">/apis/networking.k8s.io/v1/networkpolicies</html:code>
     API endpoint, filter with with the
 		<html:code>jq</html:code> utility using the following filter
-		<html:code class="ocp-api-filter" id="filter-7400bb301fff2f7fc7b1b0fb7448b8e3f15222a8d23f992204315b19eeefa72f">[.items[] | select((.metadata.namespace | startswith("openshift") | not) and (.metadata.namespace | startswith("kube-") | not) and .metadata.namespace != "default" and ({{if ne .var_network_policies_namespaces_exempt_regex "None"}}.metadata.namespace | test("{{.var_network_policies_namespaces_exempt_
-regex}}") | not{{else}}true{{end}})) | .metadata.namespace] | unique</html:code>
+		<html:code class="ocp-api-filter" id="filter-7400bb301fff2f7fc7b1b0fb7448b8e3f15222a8d23f992204315b19eeefa72f">[.items[] | select((.metadata.namespace | startswith("openshift") | not) and (.metadata.namespace | startswith("kube-") | not) and .metadata.namespace != "default" and ({{if ne .var_network_policies_namespaces_exempt_regex "None"}}.metadata.namespace | test("{{.var_network_policies_namespaces_exempt_regex}}") | not{{else}}true{{end}})) | .metadata.namespace] | unique</html:code>
     and persist it to the local
 		<html:code class="ocp-dump-location" id="dump-7400bb301fff2f7fc7b1b0fb7448b8e3f15222a8d23f992204315b19eeefa72f">
 			<xccdf-1.2:sub idref="xccdf_org.ssgproject.content_value_ocp_data_root" use="legacy" />/apis/networking.k8s.io/v1/networkpolicies#7400bb301fff2f7fc7b1b0fb7448b8e3f15222a8d23f992204315b19eeefa72f
@@ -387,8 +386,7 @@ regex}}") | not{{else}}true{{end}})) | .metadata.namespace] | unique</html:code>
 		<html:code class="ocp-api-endpoint" id="f673748db2dd4e4f0ad55d10ce5e86714c06da02b67ddb392582f71ef81efab2">/api/v1/namespaces</html:code>
     API endpoint, filter with with the
 		<html:code>jq</html:code> utility using the following filter
-		<html:code class="ocp-api-filter" id="filter-f673748db2dd4e4f0ad55d10ce5e86714c06da02b67ddb392582f71ef81efab2">[.items[] | select((.metadata.name | startswith("openshift") | not) and (.metadata.name | startswith("kube-") | not) and .metadata.name != "default" and ({{if ne .var_network_policies_namespaces_exempt_regex "None"}}.metadata.name | test("{{.var_network_policies_namespaces_exempt_regex}}") | not{{els
-e}}true{{end}}))]</html:code>
+		<html:code class="ocp-api-filter" id="filter-f673748db2dd4e4f0ad55d10ce5e86714c06da02b67ddb392582f71ef81efab2">[.items[] | select((.metadata.name | startswith("openshift") | not) and (.metadata.name | startswith("kube-") | not) and .metadata.name != "default" and ({{if ne .var_network_policies_namespaces_exempt_regex "None"}}.metadata.name | test("{{.var_network_policies_namespaces_exempt_regex}}") | not{{else}}true{{end}}))]</html:code>
     and persist it to the local
 		<html:code class="ocp-dump-location" id="dump-f673748db2dd4e4f0ad55d10ce5e86714c06da02b67ddb392582f71ef81efab2">
 			<xccdf-1.2:sub idref="xccdf_org.ssgproject.content_value_ocp_data_root" use="legacy" />/api/v1/namespaces#f673748db2dd4e4f0ad55d10ce5e86714c06da02b67ddb392582f71ef81efab2
