@@ -153,7 +153,7 @@ Or checking if the `kubeadmin` user has been removed:
 ```
 
 Let's look at a more complicated example where we want to check that the
-OpenShift API server is configured in a specific way:
+OpenShift API server isn't configured to use `token-auth-file`:
 
 ```xml
 <?xml version='1.0' encoding='utf-8'?>
