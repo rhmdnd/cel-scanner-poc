@@ -15,6 +15,17 @@ compliance content. The SCAP standard and tooling is not suited to container
 environments, and we need to work around those shortcomings in the Compliance
 Operator.
 
+### The general compliance checking workflow
+
+The general way how the scanning happens is simple:
+1. Declare the objects to be evaluated
+1. Declare the compliance expression
+1. Fetch the objects
+1. Assess whether they satisfy the compliance expression
+
+Below we will see how these steps are accomplished today, and how it could
+be done when using CEL.
+
 #### What we do today
 
 Today, we implement checks using
@@ -27,6 +38,15 @@ implements SCAP and OVAL, and accepts SCAP "datastreams" as an argument (e.g.,
 
 This is ultimately the vehicle we're using to evaluate compliance posture for
 OpenShift via the Compliance Operator.
+
+#### Current Workflow
+1. OVAL is the language used to describe the resources to be collected;
+    however, it cannot describe OpenShift resources. So this is done by
+    overloading the datastream with the API Paths.
+1. OVAL is also used to write the compliance expression (tests, objects and states)
+1. OpenSCAP cannot fetch OpenShift resources as well, so CO collects them and
+    dumps them into yaml files for OpenSCAP to look at.
+1. CO spins up OpenSCAP to analyse the dumped yaml file.
 
 The following is the OVAL we need to check if OpenShift has an identity
 provider configured:
@@ -215,6 +235,7 @@ users, secrets, and a `ConfigMap`. But, those details aren't defined in the
 OVAL. How does the operator know where to get those resources? :thinking:
 
 
+OpenSCAP cannot fetch resource in OpenShift, so CO does this on its behalf.
 The API paths used to fetch the resources we need are stuffed into a separate
 part of the datastream, outside the OVAL snippets above. These details are
 hiding in plain sight within the standard, and fished out by the operator
@@ -384,8 +405,16 @@ resources, require handcrafted XML that overloads aspects of the SCAP and OVAL
 standards to pass data around.
 
 ### Now let's compare it with CEL based Rule:
+
+#### CEL Workflow
+1. We established a syntax to express the API Path resources
+1. We use CEL to write the compliance expressions.
+1. cel-scanner-poc fetches the resources directly with a kube client
+1. cel-scanner-poc passes the collected resources to the CEL program
+
 We use the inputs to reference api resources and tailored variables 
 and then perform cel evaluation on it.
+
 ```yaml
 kind: Rule
 checkType: Platform
