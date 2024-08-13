@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 go run main.go -i rules/platform/etcd-cert-file.yaml
 go run main.go -i rules/platform/token-based-authentication-disabled.yaml
 go run main.go -i rules/platform/scc-required-drop-capabilities.yaml
