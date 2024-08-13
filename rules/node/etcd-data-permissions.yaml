@@ -3,9 +3,9 @@
 kind: Rule
 checkType: Node
 title: Ensure the etcd data directory permissions are 0700
-expression: ectcd_file.mode == 0700
+expression: etcd_file.mode == 0700
 inputs:
-  - name: ectcd_file
+  - name: etcd_file
     type: File
     path: /host/var/lib/etcd
 errorMessage: The etcd data directory does not have 0700 permissions.
